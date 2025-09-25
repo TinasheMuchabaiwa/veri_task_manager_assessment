@@ -1,8 +1,10 @@
 package com.veri.taskmanager.controller;
 
+import com.veri.taskmanager.dto.StandardResponse;
 import com.veri.taskmanager.dto.TaskRequest;
 import com.veri.taskmanager.dto.TaskResponse;
 import com.veri.taskmanager.service.TaskService;
+import com.veri.taskmanager.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,14 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -33,8 +32,8 @@ public class TaskController {
             summary = "Get all user tasks",
             description = "Retrieves all tasks belonging to the authenticated user"
     )
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Tasks retrieved successfully",
                     content = @Content(
@@ -42,16 +41,16 @@ public class TaskController {
                             schema = @Schema(implementation = TaskResponse.class)
                     )
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - JWT token required",
                     content = @Content(mediaType = "application/json")
             )
     })
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+    public ResponseEntity<StandardResponse<List<TaskResponse>>> getAllTasks() {
         List<TaskResponse> tasks = taskService.getAllTasks();
-        return ResponseEntity.ok(tasks);
+        return ResponseUtil.success("Tasks retrieved successfully", tasks);
     }
 
     @Operation(
@@ -79,14 +78,12 @@ public class TaskController {
             )
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<StandardResponse<TaskResponse>> getTaskById(@PathVariable Long id) {
         try {
             TaskResponse task = taskService.getTaskById(id);
-            return ResponseEntity.ok(task);
+            return ResponseUtil.success("Task retrieved successfully", task);
         } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Task not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseUtil.notFound("Task not found");
         }
     }
 
@@ -115,9 +112,9 @@ public class TaskController {
             )
     })
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest request) {
+    public ResponseEntity<StandardResponse<TaskResponse>> createTask(@Valid @RequestBody TaskRequest request) {
         TaskResponse task = taskService.createTask(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+        return ResponseUtil.created("Task created successfully", task, task.getId());
     }
 
     @Operation(
@@ -150,14 +147,12 @@ public class TaskController {
             )
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTask(@PathVariable Long id, @Valid @RequestBody TaskRequest request) {
+    public ResponseEntity<StandardResponse<TaskResponse>> updateTask(@PathVariable Long id, @Valid @RequestBody TaskRequest request) {
         try {
             TaskResponse task = taskService.updateTask(id, request);
-            return ResponseEntity.ok(task);
+            return ResponseUtil.success("Task updated successfully", task);
         } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Task not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseUtil.notFound("Task not found");
         }
     }
 
@@ -183,14 +178,12 @@ public class TaskController {
             )
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<StandardResponse<Void>> deleteTask(@PathVariable Long id) {
         try {
             taskService.deleteTask(id);
-            return ResponseEntity.noContent().build();
+            return ResponseUtil.noContent("Task deleted successfully");
         } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Task not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseUtil.notFound("Task not found");
         }
     }
 }
