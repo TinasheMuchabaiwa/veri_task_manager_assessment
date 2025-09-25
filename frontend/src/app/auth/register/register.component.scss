@@ -1,0 +1,149 @@
+// Import shared auth styles
+@import '../login/login.component.scss';
+
+// Register-specific enhancements
+.auth-form {
+  .password-strength {
+    margin-top: 8px;
+    font-size: 0.875rem;
+
+    .strength-label {
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 4px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .strength-bar {
+      height: 4px;
+      background-color: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 4px;
+
+      .strength-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+
+        &.strength-weak {
+          width: 33%;
+          background-color: #f44336;
+        }
+
+        &.strength-medium {
+          width: 66%;
+          background-color: #ff9800;
+        }
+
+        &.strength-strong {
+          width: 100%;
+          background-color: #4caf50;
+        }
+      }
+    }
+
+    .strength-text {
+      font-weight: 500;
+      font-size: 0.75rem;
+
+      &.strength-weak {
+        color: #f44336;
+      }
+
+      &.strength-medium {
+        color: #ff9800;
+      }
+
+      &.strength-strong {
+        color: #4caf50;
+      }
+    }
+  }
+
+  .success-icon {
+    color: #4caf50;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  // Enhanced form field spacing for register form
+  .mat-form-field {
+    margin-bottom: 0.5rem;
+
+    &:last-of-type {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+// Additional spacing for register form
+.auth-card {
+  max-width: 420px; // Slightly wider for register form
+}
+
+// Material Design overrides for register
+::ng-deep {
+  .mat-form-field-hint-wrapper {
+    .mat-hint {
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 0.75rem;
+    }
+  }
+
+  // Success state for form fields
+  .mat-form-field.mat-focused:not(.mat-form-field-invalid) {
+    .mat-form-field-outline-thick {
+      color: #4caf50;
+    }
+
+    .mat-form-field-label {
+      color: #4caf50;
+    }
+  }
+
+  // Enhanced password field styling
+  .mat-form-field-suffix {
+    .mat-icon-button {
+      .mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+// Animation for password strength indicator
+@keyframes strengthAnimation {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.strength-fill {
+  animation: strengthAnimation 0.3s ease-out;
+  transform-origin: left;
+}
+
+// Mobile enhancements for register
+@media (max-width: 768px) {
+  .auth-card {
+    max-width: none;
+  }
+
+  .password-strength {
+    .strength-label {
+      font-size: 0.7rem;
+    }
+
+    .strength-text {
+      font-size: 0.7rem;
+    }
+  }
+}

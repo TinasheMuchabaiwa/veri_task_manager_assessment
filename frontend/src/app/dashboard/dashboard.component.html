@@ -1,0 +1,29 @@
+<div class="dashboard-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>🎉 Authentication Successful!</mat-card-title>
+      <mat-card-subtitle>Welcome to your Task Manager Dashboard</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p>You have successfully logged in! This is a temporary dashboard for Issue #8 testing.</p>
+      <p><strong>Current User:</strong> {{ currentUser?.username || 'Loading...' }}</p>
+
+      <div class="info-section">
+        <h3>What's Next?</h3>
+        <ul>
+          <li>✅ Issue #8: Angular Authentication Module (Current)</li>
+          <li>⏳ Issue #9: HTTP Interceptor and Route Guards</li>
+          <li>⏳ Issue #10: Task Management UI</li>
+        </ul>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
