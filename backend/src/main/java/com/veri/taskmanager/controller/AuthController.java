@@ -3,22 +3,20 @@ package com.veri.taskmanager.controller;
 import com.veri.taskmanager.dto.AuthResponse;
 import com.veri.taskmanager.dto.LoginRequest;
 import com.veri.taskmanager.dto.RegisterRequest;
+import com.veri.taskmanager.dto.StandardResponse;
 import com.veri.taskmanager.service.AuthService;
+import com.veri.taskmanager.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -48,14 +46,12 @@ public class AuthController {
             )
     })
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<StandardResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
         try {
             AuthResponse response = authService.register(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseUtil.created("User registered successfully", response, response.getUsername());
         } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseUtil.badRequest(e.getMessage());
         }
     }
 
@@ -79,14 +75,12 @@ public class AuthController {
             )
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<StandardResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         try {
             AuthResponse response = authService.login(request);
-            return ResponseEntity.ok(response);
+            return ResponseUtil.success("User logged in successfully", response);
         } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            return ResponseUtil.unauthorized(e.getMessage());
         }
     }
 }
