@@ -28,7 +28,6 @@ export class DashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private taskService: TaskService,
-    private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) { }
 
@@ -179,5 +178,9 @@ export class DashboardComponent implements OnInit {
 
   get completedTasks(): Task[] {
     return this.tasks.filter(task => task.status === TaskStatus.COMPLETED);
+  }
+
+  trackByTaskId(_: number, task: Task): number {
+    return task.id;
   }
 }

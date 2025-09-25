@@ -178,13 +178,13 @@
           <div *ngIf="editingTask?.id === task.id" class="edit-form">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Task Title</mat-label>
-              <input matInput [(ngModel)]="editingTask.title">
+              <input matInput [(ngModel)]="editingTask!.title">
               <mat-icon matSuffix>title</mat-icon>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Description</mat-label>
-              <textarea matInput [(ngModel)]="editingTask.description" rows="3"></textarea>
+              <textarea matInput [(ngModel)]="editingTask!.description" rows="3"></textarea>
               <mat-icon matSuffix>description</mat-icon>
             </mat-form-field>
 
