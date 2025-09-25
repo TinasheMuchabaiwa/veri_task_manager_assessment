@@ -24,6 +24,9 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
+  // Store redirect URL for post-login navigation
+  public redirectUrl: string = '/dashboard';
+
   constructor(
     private http: HttpClient,
     private router: Router
@@ -80,6 +83,11 @@ export class AuthService {
 
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this.currentUserSubject.next(user);
+
+    // Navigate to redirect URL after successful authentication
+    const redirectTo = this.redirectUrl || '/dashboard';
+    this.router.navigate([redirectTo]);
+    this.redirectUrl = '/dashboard'; // Reset redirect URL
   }
 
   logout(): void {

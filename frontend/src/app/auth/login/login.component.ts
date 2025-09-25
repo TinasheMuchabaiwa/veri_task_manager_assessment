@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-        this.router.navigate(['/dashboard']);
+        // Navigation handled by AuthService
       },
       error: (error) => {
         this.isLoading = false;
