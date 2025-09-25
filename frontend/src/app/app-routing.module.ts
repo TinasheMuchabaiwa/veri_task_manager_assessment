@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { AuthGuard } from './core/auth.guard';
 
 const routes: Routes = [
   {
@@ -15,8 +16,8 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    title: 'Dashboard - Task Manager'
-    // TODO: Add AuthGuard in Issue #9
+    title: 'Dashboard - Task Manager',
+    canActivate: [AuthGuard]
   },
   {
     path: '**',
