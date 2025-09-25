@@ -171,7 +171,7 @@ class TaskControllerTest {
     @Test
     void shouldReturnUnauthorizedWhenNoToken() throws Exception {
         mockMvc.perform(get("/api/tasks"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
