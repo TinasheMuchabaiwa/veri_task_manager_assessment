@@ -103,7 +103,7 @@ export class RegisterComponent implements OnInit {
     const request: RegisterRequest = registerRequest;
 
     this.authService.register(request).subscribe({
-      next: (response) => {
+      next: () => {
         this.snackBar.open('Registration successful! Welcome aboard!', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']
