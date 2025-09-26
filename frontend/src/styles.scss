@@ -3,16 +3,133 @@
 // Angular Material theme
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+// CSS Variables for Theming
+:root,
+.light-theme {
+  // Colors
+  --primary-color: #1976d2;
+  --secondary-color: #dc004e;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+
+  // Background colors
+  --main-bg: #f5f5f5;
+  --sidebar-bg: #ffffff;
+  --profile-bg: #f8f9fa;
+  --theme-toggle-bg: rgba(0, 0, 0, 0.04);
+  --card-bg: #ffffff;
+  --header-bg: #ffffff;
+
+  // Navigation colors
+  --nav-hover: rgba(25, 118, 210, 0.08);
+  --nav-active: rgba(25, 118, 210, 0.12);
+
+  // Text colors
+  --text-primary: #212121;
+  --text-secondary: #757575;
+
+  // Border colors
+  --border-color: #e0e0e0;
+}
+
+.dark-theme {
+  // Colors
+  --primary-color: #3f51b5;
+  --secondary-color: #f48fb1;
+  --success-color: #66bb6a;
+  --warning-color: #ffb74d;
+  --error-color: #ef5350;
+
+  // Background colors
+  --main-bg: #121212;
+  --sidebar-bg: #1e1e1e;
+  --profile-bg: #2a2a2a;
+  --theme-toggle-bg: rgba(255, 255, 255, 0.08);
+  --card-bg: #1e1e1e;
+  --header-bg: #1e1e1e;
+
+  // Navigation colors
+  --nav-hover: rgba(63, 81, 181, 0.12);
+  --nav-active: rgba(63, 81, 181, 0.16);
+
+  // Text colors
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+
+  // Border colors
+  --border-color: #333333;
+}
+
 // Global styles
 * {
   box-sizing: border-box;
 }
 
-body {
+html, body {
+  height: 100%;
   margin: 0;
+  padding: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-html, body {
-  height: 100%;
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background: var(--main-bg);
+  color: var(--text-primary);
+}
+
+// Smooth transitions for theme changes
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+// Angular Material Card overrides for dark mode
+.mat-mdc-card {
+  background: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.mat-mdc-card-header {
+  .mat-mdc-card-title {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-card-subtitle {
+    color: var(--text-secondary) !important;
+  }
+}
+
+.mat-mdc-card-content {
+  color: var(--text-primary) !important;
+}
+
+// Material button overrides for dark mode
+.mat-mdc-raised-button.mat-primary {
+  background: var(--primary-color) !important;
+}
+
+.mat-mdc-stroked-button {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+// Material form field overrides for dark mode
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background: var(--card-bg) !important;
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--text-secondary) !important;
+  }
+
+  .mat-mdc-input-element {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-form-field-outline {
+    color: var(--border-color) !important;
+  }
 }

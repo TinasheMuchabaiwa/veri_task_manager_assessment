@@ -1,0 +1,118 @@
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+
+  // Mobile Overlay
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+
+    &.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .sidebar {
+    flex-shrink: 0;
+    z-index: 1000;
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 280px; // Account for sidebar width
+    background: var(--main-bg);
+    transition: margin-left 0.3s ease;
+    position: relative;
+
+    // Mobile Menu Toggle Button
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      width: 40px;
+      height: 40px;
+      background: var(--header-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: var(--nav-hover);
+      }
+
+      .hamburger-line {
+        width: 20px;
+        height: 2px;
+        background: var(--text-primary);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+        transform-origin: center;
+      }
+
+      &.active {
+        .hamburger-line {
+          &:nth-child(1) {
+            transform: rotate(45deg) translateY(6px);
+          }
+          &:nth-child(2) {
+            opacity: 0;
+          }
+          &:nth-child(3) {
+            transform: rotate(-45deg) translateY(-6px);
+          }
+        }
+      }
+    }
+
+    .header {
+      flex-shrink: 0;
+      z-index: 100;
+      width: 100%;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .dashboard-layout {
+    .main-content {
+      margin-left: 0; // Remove sidebar margin on mobile
+
+      .mobile-menu-toggle {
+        display: flex; // Show hamburger menu on mobile
+      }
+
+      .header {
+        padding-left: 16px; // Normal padding on mobile
+      }
+    }
+
+  }
+}

@@ -1,0 +1,48 @@
+<div class="header">
+  <!-- Brand Section -->
+  <div class="brand-section">
+    <div class="brand-logo">
+      <span>Task Manager</span>
+    </div>
+    <div class="breadcrumb" *ngIf="breadcrumbs">
+      <span class="breadcrumb-item active">
+        <mat-icon>home</mat-icon>
+        {{ breadcrumbs }}
+      </span>
+    </div>
+  </div>
+
+  <!-- User Section -->
+  <div class="header-actions">
+    <div class="user-menu">
+      <button class="user-menu-trigger" [matMenuTriggerFor]="userMenu" #menuTrigger="matMenuTrigger">
+        <div class="user-profile">
+          <div class="user-avatar-small">
+            {{ getUserInitials() }}
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ currentUser?.username }}</span>
+            <span class="user-role">User</span>
+          </div>
+        </div>
+        <mat-icon class="dropdown-icon" [class.menu-open]="menuTrigger.menuOpen">keyboard_arrow_down</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="user-dropdown">
+        <button mat-menu-item disabled>
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item disabled>
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()" class="logout-menu-item">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>

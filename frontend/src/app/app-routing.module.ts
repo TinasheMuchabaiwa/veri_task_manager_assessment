@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { DashboardLayoutComponent } from './layout/dashboard-layout/dashboard-layout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { AllTasksComponent } from './pages/all-tasks/all-tasks.component';
+import { CompletedTasksComponent } from './pages/completed-tasks/completed-tasks.component';
 import { AuthGuard } from './core/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/auth/login',
+    redirectTo: '/dashboard',
     pathMatch: 'full'
   },
   {
@@ -14,14 +17,30 @@ const routes: Routes = [
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
   {
-    path: 'dashboard',
-    component: DashboardComponent,
-    title: 'Dashboard - Task Manager',
-    canActivate: [AuthGuard]
+    path: '',
+    component: DashboardLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        title: 'Dashboard - Task Manager'
+      },
+      {
+        path: 'tasks',
+        component: AllTasksComponent,
+        title: 'All Tasks - Task Manager'
+      },
+      {
+        path: 'completed',
+        component: CompletedTasksComponent,
+        title: 'Completed Tasks - Task Manager'
+      }
+    ]
   },
   {
     path: '**',
-    redirectTo: '/auth/login'
+    redirectTo: '/dashboard'
   }
 ];
 
