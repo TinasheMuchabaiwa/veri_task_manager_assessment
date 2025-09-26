@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Production deployment script for EC2
-# Usage: ./deploy.sh
-
 set -e  # Exit on any error
 
 echo "🚀 Starting deployment to EC2..."
@@ -29,22 +26,6 @@ docker image prune -f || true
 
 echo "🚀 Starting production containers..."
 docker compose -f docker-compose.prod.yml up -d
-
-echo "⏳ Waiting for services to be healthy..."
-sleep 30
-
-# Health checks
-echo "🏥 Checking backend health..."
-until curl -f http://localhost:8080/actuator/health; do
-    echo "Backend not ready yet... waiting 10s"
-    sleep 10
-done
-
-echo "🏥 Checking frontend health..."
-until curl -f http://localhost:3000/health; do
-    echo "Frontend not ready yet... waiting 10s"
-    sleep 10
-done
 
 echo "📊 Deployment status:"
 docker compose -f docker-compose.prod.yml ps
