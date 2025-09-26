@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Backend Spring Boot service for production
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: task-manager-backend-prod
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8080
+      - DOMAIN_NAME=veri-assessment.tinashe.website
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Frontend Angular with Nginx service for production
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: task-manager-frontend-prod
+    ports:
+      - "3000:80"  # Different port since Nginx will be on 80/443
+    environment:
+      - API_URL=https://veri-assessment.tinashe.website
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Networks
+networks:
+  default:
+    name: task-manager-prod-network
+    driver: bridge
+
+# Volumes for data persistence
+volumes:
+  backend-logs:
+    driver: local
+  frontend-logs:
+    driver: local

@@ -92,7 +92,7 @@ export class AuthService {
 
   logout(): void {
     this.clearAuthData();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   private clearAuthData(): void {
