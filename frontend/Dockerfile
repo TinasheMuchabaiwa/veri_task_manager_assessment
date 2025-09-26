@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 3000:80
 
 # Start server to serve built files
 CMD ["http-server", "dist/frontend", "-p", "80", "-c-1"]
