@@ -1,18 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { AuthService } from '../auth/auth.service';
-import { TaskService } from '../tasks/task.service';
-import { User } from '../models/user.model';
-import { Task, TaskStatus, TaskRequest } from '../models/task.model';
+import { TaskService } from '../../tasks/task.service';
+import { Task, TaskStatus, TaskRequest } from '../../models/task.model';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  selector: 'app-all-tasks',
+  templateUrl: './all-tasks.component.html',
+  styleUrls: ['./all-tasks.component.scss']
 })
-export class DashboardComponent implements OnInit {
-  currentUser: User | null = null;
+export class AllTasksComponent implements OnInit {
   tasks: Task[] = [];
   isLoading = false;
   isCreatingTask = false;
@@ -25,16 +22,15 @@ export class DashboardComponent implements OnInit {
   // Edit task
   editingTask: Task | null = null;
 
+  // Filter
+  filterStatus: 'all' | 'pending' | 'completed' = 'all';
+
   constructor(
-    private authService: AuthService,
     private taskService: TaskService,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
     this.loadTasks();
   }
 
@@ -168,40 +164,26 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  logout(): void {
-    this.authService.logout();
+  get filteredTasks(): Task[] {
+    switch (this.filterStatus) {
+      case 'pending':
+        return this.tasks.filter(task => task.status === TaskStatus.PENDING);
+      case 'completed':
+        return this.tasks.filter(task => task.status === TaskStatus.COMPLETED);
+      default:
+        return this.tasks;
+    }
   }
 
-  get pendingTasks(): Task[] {
-    return this.tasks.filter(task => task.status === TaskStatus.PENDING);
+  get pendingCount(): number {
+    return this.tasks.filter(task => task.status === TaskStatus.PENDING).length;
   }
 
-  get completedTasks(): Task[] {
-    return this.tasks.filter(task => task.status === TaskStatus.COMPLETED);
+  get completedCount(): number {
+    return this.tasks.filter(task => task.status === TaskStatus.COMPLETED).length;
   }
 
   trackByTaskId(_: number, task: Task): number {
     return task.id;
-  }
-
-  getGreeting(): string {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
-
-  getMotivationalMessage(): string {
-    const messages = [
-      "Let's make today productive!",
-      "Ready to tackle your tasks?",
-      "Time to get things done!",
-      "Your goals are waiting for you!",
-      "Let's turn your plans into achievements!",
-      "Today is full of possibilities!",
-      "Make it happen, one task at a time!"
-    ];
-    const randomIndex = Math.floor(Math.random() * messages.length);
-    return messages[randomIndex];
   }
 }

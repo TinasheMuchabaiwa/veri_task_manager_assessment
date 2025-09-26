@@ -1,0 +1,60 @@
+<div class="sidebar">
+  <!-- User Profile Section -->
+  <div class="user-profile">
+    <div class="user-avatar">
+      <div class="avatar-circle">
+        {{ getUserInitials() }}
+      </div>
+      <div class="online-indicator"></div>
+    </div>
+    <div class="user-info">
+      <div class="username">{{ currentUser?.username || 'Loading...' }}</div>
+      <div class="user-role">Task Manager</div>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="navigation">
+    <div class="nav-section">
+      <div class="nav-section-title">Menu</div>
+      <ul class="nav-list">
+        <li
+          *ngFor="let item of navigationItems"
+          class="nav-item"
+          [class.active]="item.active"
+          (click)="navigateTo(item)">
+          <div class="nav-link">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+          </div>
+          <div class="nav-indicator" *ngIf="item.active"></div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Theme Toggle -->
+  <div class="theme-toggle">
+    <div class="theme-toggle-container">
+      <mat-icon class="theme-icon">{{ isDarkMode ? 'dark_mode' : 'light_mode' }}</mat-icon>
+      <span class="theme-label">{{ isDarkMode ? 'Dark' : 'Light' }} Mode</span>
+      <mat-slide-toggle
+        [checked]="isDarkMode"
+        (toggleChange)="toggleTheme()"
+        class="theme-switch">
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <!-- Logout Section -->
+  <div class="logout-section">
+    <button
+      mat-stroked-button
+      color="warn"
+      class="logout-button"
+      (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </div>
+</div>

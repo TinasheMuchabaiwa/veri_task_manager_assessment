@@ -1,40 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { AuthService } from '../auth/auth.service';
-import { TaskService } from '../tasks/task.service';
-import { User } from '../models/user.model';
-import { Task, TaskStatus, TaskRequest } from '../models/task.model';
+import { TaskService } from '../../tasks/task.service';
+import { Task, TaskStatus, TaskRequest } from '../../models/task.model';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  selector: 'app-completed-tasks',
+  templateUrl: './completed-tasks.component.html',
+  styleUrls: ['./completed-tasks.component.scss']
 })
-export class DashboardComponent implements OnInit {
-  currentUser: User | null = null;
+export class CompletedTasksComponent implements OnInit {
   tasks: Task[] = [];
   isLoading = false;
-  isCreatingTask = false;
-
-  // New task form
-  newTaskTitle = '';
-  newTaskDescription = '';
-  showNewTaskForm = false;
+  isUpdating = false;
 
   // Edit task
   editingTask: Task | null = null;
 
   constructor(
-    private authService: AuthService,
     private taskService: TaskService,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
     this.loadTasks();
   }
 
@@ -53,46 +41,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  showCreateForm(): void {
-    this.showNewTaskForm = true;
-    this.newTaskTitle = '';
-    this.newTaskDescription = '';
-  }
-
-  hideCreateForm(): void {
-    this.showNewTaskForm = false;
-    this.newTaskTitle = '';
-    this.newTaskDescription = '';
-  }
-
-  createTask(): void {
-    if (!this.newTaskTitle.trim()) {
-      this.snackBar.open('Task title is required', 'Close', { duration: 3000 });
-      return;
-    }
-
-    this.isCreatingTask = true;
-    const taskRequest: TaskRequest = {
-      title: this.newTaskTitle.trim(),
-      description: this.newTaskDescription.trim() || undefined,
-      status: TaskStatus.PENDING
-    };
-
-    this.taskService.createTask(taskRequest).subscribe({
-      next: (newTask) => {
-        this.tasks.unshift(newTask);
-        this.hideCreateForm();
-        this.isCreatingTask = false;
-        this.snackBar.open('Task created successfully!', 'Close', { duration: 3000 });
-      },
-      error: (error) => {
-        console.error('Error creating task:', error);
-        this.snackBar.open('Failed to create task', 'Close', { duration: 5000 });
-        this.isCreatingTask = false;
-      }
-    });
-  }
-
   startEdit(task: Task): void {
     this.editingTask = { ...task };
   }
@@ -107,6 +55,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    this.isUpdating = true;
     const taskRequest: TaskRequest = {
       title: this.editingTask.title.trim(),
       description: this.editingTask.description?.trim() || undefined,
@@ -120,21 +69,23 @@ export class DashboardComponent implements OnInit {
           this.tasks[index] = updatedTask;
         }
         this.editingTask = null;
+        this.isUpdating = false;
         this.snackBar.open('Task updated successfully!', 'Close', { duration: 3000 });
       },
       error: (error) => {
         console.error('Error updating task:', error);
         this.snackBar.open('Failed to update task', 'Close', { duration: 5000 });
+        this.isUpdating = false;
       }
     });
   }
 
-  toggleTaskStatus(task: Task): void {
-    const newStatus = task.status === TaskStatus.PENDING ? TaskStatus.COMPLETED : TaskStatus.PENDING;
+  markAsPending(task: Task): void {
+    this.isUpdating = true;
     const taskRequest: TaskRequest = {
       title: task.title,
       description: task.description,
-      status: newStatus
+      status: TaskStatus.PENDING
     };
 
     this.taskService.updateTask(task.id, taskRequest).subscribe({
@@ -143,12 +94,13 @@ export class DashboardComponent implements OnInit {
         if (index !== -1) {
           this.tasks[index] = updatedTask;
         }
-        const statusText = newStatus === TaskStatus.COMPLETED ? 'completed' : 'pending';
-        this.snackBar.open(`Task marked as ${statusText}!`, 'Close', { duration: 3000 });
+        this.isUpdating = false;
+        this.snackBar.open('Task marked as pending!', 'Close', { duration: 3000 });
       },
       error: (error) => {
         console.error('Error updating task status:', error);
         this.snackBar.open('Failed to update task status', 'Close', { duration: 5000 });
+        this.isUpdating = false;
       }
     });
   }
@@ -168,12 +120,60 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  logout(): void {
-    this.authService.logout();
+  markAllPending(): void {
+    if (this.completedTasks.length === 0) return;
+
+    const confirmMessage = `Are you sure you want to mark all ${this.completedTasks.length} completed tasks as pending?`;
+    if (confirm(confirmMessage)) {
+      this.isUpdating = true;
+      const updatePromises = this.completedTasks.map(task => {
+        const taskRequest: TaskRequest = {
+          title: task.title,
+          description: task.description,
+          status: TaskStatus.PENDING
+        };
+        return this.taskService.updateTask(task.id, taskRequest).toPromise();
+      });
+
+      Promise.all(updatePromises).then(updatedTasks => {
+        updatedTasks.forEach(updatedTask => {
+          if (updatedTask) {
+            const index = this.tasks.findIndex(t => t.id === updatedTask.id);
+            if (index !== -1) {
+              this.tasks[index] = updatedTask;
+            }
+          }
+        });
+        this.isUpdating = false;
+        this.snackBar.open('All tasks marked as pending!', 'Close', { duration: 3000 });
+      }).catch(error => {
+        console.error('Error updating tasks:', error);
+        this.snackBar.open('Failed to update some tasks', 'Close', { duration: 5000 });
+        this.isUpdating = false;
+      });
+    }
   }
 
-  get pendingTasks(): Task[] {
-    return this.tasks.filter(task => task.status === TaskStatus.PENDING);
+  deleteAllCompleted(): void {
+    if (this.completedTasks.length === 0) return;
+
+    const confirmMessage = `Are you sure you want to delete all ${this.completedTasks.length} completed tasks? This action cannot be undone.`;
+    if (confirm(confirmMessage)) {
+      this.isUpdating = true;
+      const deletePromises = this.completedTasks.map(task =>
+        this.taskService.deleteTask(task.id).toPromise()
+      );
+
+      Promise.all(deletePromises).then(() => {
+        this.tasks = this.tasks.filter(t => t.status !== TaskStatus.COMPLETED);
+        this.isUpdating = false;
+        this.snackBar.open('All completed tasks deleted!', 'Close', { duration: 3000 });
+      }).catch(error => {
+        console.error('Error deleting tasks:', error);
+        this.snackBar.open('Failed to delete some tasks', 'Close', { duration: 5000 });
+        this.isUpdating = false;
+      });
+    }
   }
 
   get completedTasks(): Task[] {
@@ -182,26 +182,5 @@ export class DashboardComponent implements OnInit {
 
   trackByTaskId(_: number, task: Task): number {
     return task.id;
-  }
-
-  getGreeting(): string {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
-
-  getMotivationalMessage(): string {
-    const messages = [
-      "Let's make today productive!",
-      "Ready to tackle your tasks?",
-      "Time to get things done!",
-      "Your goals are waiting for you!",
-      "Let's turn your plans into achievements!",
-      "Today is full of possibilities!",
-      "Make it happen, one task at a time!"
-    ];
-    const randomIndex = Math.floor(Math.random() * messages.length);
-    return messages[randomIndex];
   }
 }

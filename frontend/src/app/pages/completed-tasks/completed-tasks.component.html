@@ -1,0 +1,146 @@
+<div class="completed-tasks-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>task_alt</mat-icon>
+        Completed Tasks
+      </h1>
+      <p class="page-subtitle">Review and manage your completed accomplishments</p>
+    </div>
+    <div class="header-stats" *ngIf="completedTasks.length > 0">
+      <mat-chip class="completion-chip">
+        <mat-icon>celebration</mat-icon>
+        {{ completedTasks.length }} {{ completedTasks.length === 1 ? 'Task' : 'Tasks' }} Completed
+      </mat-chip>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <mat-card class="actions-card" *ngIf="completedTasks.length > 0">
+    <mat-card-content>
+      <div class="actions-row">
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="markAllPending()"
+          [disabled]="isUpdating"
+          class="bulk-action-btn">
+          <mat-icon>undo</mat-icon>
+          Mark All as Pending
+        </button>
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="deleteAllCompleted()"
+          [disabled]="isUpdating"
+          class="bulk-action-btn">
+          <mat-icon>delete_sweep</mat-icon>
+          Delete All Completed
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading completed tasks...</p>
+  </div>
+
+  <!-- Empty State -->
+  <mat-card *ngIf="!isLoading && completedTasks.length === 0" class="empty-state">
+    <mat-card-content>
+      <mat-icon class="empty-icon">task_alt</mat-icon>
+      <h3>No completed tasks yet</h3>
+      <p>Complete some tasks to see them here. Keep up the great work!</p>
+      <button mat-raised-button color="primary" routerLink="/tasks">
+        <mat-icon>assignment</mat-icon>
+        View All Tasks
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Completed Tasks List -->
+  <div *ngIf="!isLoading && completedTasks.length > 0" class="completed-tasks-list">
+    <div *ngFor="let task of completedTasks; trackBy: trackByTaskId" class="task-item">
+      <mat-card class="completed-task-card">
+        <!-- View Mode -->
+        <div *ngIf="editingTask?.id !== task.id">
+          <mat-card-header>
+            <mat-card-title class="completed-title">
+              <mat-icon
+                class="completed-icon"
+                (click)="markAsPending(task)"
+                matTooltip="Mark as pending">
+                check_circle
+              </mat-icon>
+              {{ task.title }}
+            </mat-card-title>
+            <div class="task-actions">
+              <button mat-icon-button (click)="startEdit(task)" [disabled]="editingTask !== null" matTooltip="Edit task">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="markAsPending(task)" [disabled]="isUpdating" matTooltip="Mark as pending">
+                <mat-icon>undo</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteTask(task)" matTooltip="Delete task">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content *ngIf="task.description">
+            <p class="completed-description">{{ task.description }}</p>
+          </mat-card-content>
+
+          <mat-card-footer class="task-footer">
+            <div class="completion-badge">
+              <mat-icon>celebration</mat-icon>
+              <span>Completed</span>
+            </div>
+          </mat-card-footer>
+        </div>
+
+        <!-- Edit Mode -->
+        <div *ngIf="editingTask?.id === task.id" class="edit-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Task Title</mat-label>
+            <input matInput [(ngModel)]="editingTask!.title">
+            <mat-icon matSuffix>title</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput [(ngModel)]="editingTask!.description" rows="3"></textarea>
+            <mat-icon matSuffix>description</mat-icon>
+          </mat-form-field>
+
+          <div class="edit-actions">
+            <button mat-raised-button color="primary" (click)="updateTask()" [disabled]="isUpdating">
+              <mat-spinner *ngIf="isUpdating" diameter="16"></mat-spinner>
+              <mat-icon *ngIf="!isUpdating">save</mat-icon>
+              <span>{{ isUpdating ? 'Saving...' : 'Save Changes' }}</span>
+            </button>
+            <button mat-stroked-button (click)="cancelEdit()" [disabled]="isUpdating">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Achievement Message -->
+  <mat-card *ngIf="!isLoading && completedTasks.length > 0" class="achievement-card">
+    <mat-card-content>
+      <div class="achievement-content">
+        <mat-icon class="trophy-icon">emoji_events</mat-icon>
+        <div class="achievement-text">
+          <h4>Well Done!</h4>
+          <p>You've completed {{ completedTasks.length }} {{ completedTasks.length === 1 ? 'task' : 'tasks' }}. Great job staying productive!</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

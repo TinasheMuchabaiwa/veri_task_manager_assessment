@@ -1,0 +1,37 @@
+<div class="dashboard-layout">
+  <!-- Mobile Overlay -->
+  <div
+    class="mobile-overlay"
+    [class.active]="isMobile && isMobileMenuOpen"
+    (click)="closeMobileMenu()">
+  </div>
+
+  <!-- Sidebar -->
+  <app-sidebar
+    class="sidebar"
+    [class.mobile-open]="isMobile && isMobileMenuOpen"
+    (menuItemClicked)="closeMobileMenu()">
+  </app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Mobile Menu Button -->
+    <button
+      *ngIf="isMobile"
+      class="mobile-menu-toggle"
+      (click)="toggleMobileMenu()"
+      [class.active]="isMobileMenuOpen">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Header -->
+    <app-header class="header"></app-header>
+
+    <!-- Page Content -->
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
