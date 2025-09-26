@@ -22,13 +22,13 @@ echo "Building frontend image..."
 docker build -t task-manager-frontend:latest ./frontend
 
 echo "🔄 Stopping existing containers..."
-docker compose -f docker compose.prod.yml down || true
+docker compose -f docker-compose.prod.yml down || true
 
 echo "🗑️ Cleaning up old images..."
 docker image prune -f || true
 
 echo "🚀 Starting production containers..."
-docker compose -f docker compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 
 echo "⏳ Waiting for services to be healthy..."
 sleep 30
@@ -47,7 +47,7 @@ until curl -f http://localhost:3000/health; do
 done
 
 echo "📊 Deployment status:"
-docker compose -f docker compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 
 echo "✅ Deployment complete!"
 echo "🌐 Application will be available at: https://$DOMAIN"
@@ -56,4 +56,4 @@ echo "🔍 Backend Health: https://$DOMAIN/actuator/health"
 
 # Show logs
 echo "📋 Recent logs:"
-docker compose -f docker compose.prod.yml logs --tail=20
+docker compose -f docker-compose.prod.yml logs --tail=20
