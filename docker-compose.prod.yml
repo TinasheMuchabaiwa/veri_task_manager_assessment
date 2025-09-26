@@ -36,9 +36,6 @@ services:
       - "3000:80"  # Different port since Nginx will be on 80/443
     environment:
       - API_URL=https://veri-assessment.tinashe.website
-    depends_on:
-      backend:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s
