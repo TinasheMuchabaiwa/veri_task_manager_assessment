@@ -26,7 +26,7 @@ public class OpenApiConfig {
                         .contact(new Contact()
                                 .name("Veri Platform")
                                 .url("https://github.com/TinasheMuchabaiwa/veri_task_manager_assessment")
-                                .email("tinashe@veriplatform.com"))
+                                .email("muchabaiwatinashe@gmail.com"))
                         .license(new License()
                                 .name("MIT License")
                                 .url("https://opensource.org/licenses/MIT")))
